@@ -1,63 +1,24 @@
-#
-# Intel Compilers (IMPI or MVAPICH2)
-CC_SER  =   icpc -g
-CC_MPI  = mpicxx -g
-CC_OMP  =   icpc -g -fopenmp
-CC_HYB  = mpicxx -g -fopenmp
-LD_MPI  = mpicxx -g
-LD_OMP  =   icpc -g -fopenmp
-LD_HYB  = mpicxx -g -fopenmp
+OMPFLAG = -fopenmp
+CC      = $(OSC_CXX) 
+MPICC   = $(OSC_MPI_CXX) 
+LOAD_X  = -xHost
+ifeq ($(LMOD_FAMILY_COMPILER),pgi)
+    OMPFLAG = -mp
+    LOAD_X  =
+endif
+ifeq ($(LMOD_FAMILY_COMPILER),gnu)
+    LOAD_X  = -march=native
+endif
 
-#CHPC South Africa:  Intel Compiler (OpenMPI)
-#CHPC_HOST =lengau
+CC_SER  =    $(CC) -g
+CC_MPI  = $(MPICC) -g
+CC_OMP  =    $(CC) -g $(OMPFLAG)
+CC_HYB  = $(MPICC) -g $(OMPFLAG)
+LD_MPI  = $(MPICC) -g
+LD_OMP  =    $(CC) -g $(OMPFLAG)
+LD_HYB  = $(MPICC) -g $(OMPFLAG)
 
 AR      = ar
-
-ifeq ($(TACC_SYSTEM),frontera)
-   LOAD_X=-xCORE-AVX2 -axCORE-AVX512
-endif
-
-ifeq ($(TACC_SYSTEM),stampede)
-   LOAD_X=-xhost
-endif
-ifeq ($(TACC_SYSTEM),stampedeknl)
-   LOAD_X=-xMIC-AVX512
-endif
-ifeq ($(TACC_SYSTEM),ls5)
-   LOAD_X=-xhost
-endif
-ifeq ($(NERSC_HOST),cori)
-   LOAD_X=-xhost
-
-   CC_SER  = CC -g
-   CC_MPI  = CC -g
-   CC_OMP  = CC -fopenmp -g
-   CC_HYB  = CC -fopenmp -g
-
-   LD_MPI  = CC -g
-   LD_OMP  = CC -fopenmp -g
-   LD_HYB  = CC -fopenmp -g
-endif
-
-ifeq ($(CHPC_HOST),lengau)
-CC_SER  =    c++ -g
-CC_MPI  = mpicxx -g
-CC_OMP  =    c++ -fopenmp -g
-CC_HYB  = mpicxx -fopenmp -g
-LD_MPI  = mpicxx -g
-LD_OMP  =    c++ -fopenmp -g
-LD_HYB  = mpicxx -fopenmp -g
-endif
-
-
-#rm -fr $(EXES) $(DRIVER_OBJECTS) $(LIB_OBJECTS) $(LIB) *.mod
-
-#                               new load code auto adjusts for units of seconds.
-#CFLAGS	= -D _GNU_SOURCE -D LS5 no longer required
-#CFLAGS	= -D _GNU_SOURCE -D SP1 no longer required
-#CFLAGS	= -D _GNU_SOURCE        Required only for timers, boundto and mapto_procid  added separate rule for timers
- CFLAGS	= 
-LDFLAGS	= 
 
 DRIVER_SOURCES = amask_mpi.c amask_omp.c amask_hybrid.c 
 DRIVER_OBJECTS = $(DRIVER_SOURCES:.c=.o)
