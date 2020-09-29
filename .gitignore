@@ -18,3 +18,9 @@ doc/*.log
 doc/*.aux
 doc/*.toc
 doc/amask_ug.pdf
+src/placement/hybrid
+src/placement/hybrid.o
+src/placement/mpi
+src/placement/mpi.o
+src/placement/omp
+src/placement/omp.o
